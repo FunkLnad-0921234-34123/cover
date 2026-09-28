@@ -1,0 +1,35 @@
+name: Update songs.json
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'uploads/**'
+      - 'covers/**'
+
+jobs:
+  update-songs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Generate songs.json
+        run: python generate_songs.py
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add songs.json
+          git diff --staged --quiet || git commit -m "🤖 Auto-update songs.json"
+          git push
