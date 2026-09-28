@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Funk Land</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { overflow-x: hidden; }
+  body { 
+    font-family: 'Vazirmatn', Tahoma, sans-serif; 
+    background: #0a0014; color: #fff; min-height: 100vh; 
+  }
+
+  /* ============ کرسر ============ */
+  @media (hover: hover) and (pointer: fine) { * { cursor: none !important; } }
+  #cursor-dot {
+    position: fixed; width: 10px; height: 10px;
+    background: #b366ff; border-radius: 50%;
+    pointer-events: none; z-index: 99999999;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 15px #b366ff, 0 0 30px #8a2be2;
+    transition: transform 0.05s ease-out, width 0.2s, height 0.2s;
+    mix-blend-mode: screen;
+  }
+  #cursor-ring {
+    position: fixed; width: 40px; height: 40px;
+    border: 2px solid #b366ff; border-radius: 50%;
+    pointer-events: none; z-index: 99999998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease-out, width 0.25s, height 0.25s, border-color 0.25s, background 0.25s;
+    background: rgba(179,102,255,0.08);
+    box-shadow: 0 0 20px rgba(179,102,255,0.6);
+  }
+  #cursor-ring.hover {
+    width: 65px; height: 65px; border-color: #fff;
+    background: rgba(179,102,255,0.25);
+    box-shadow: 0 0 30px #b366ff, 0 0 60px #8a2be2;
+  }
+  #cursor-dot.hover { width: 16px; height: 16px; background: #fff; }
+  @media (hover: none), (pointer: coarse) {
+    #cursor-dot, #cursor-ring { display: none !important; }
+    * { cursor: auto !important; }
+  }
+
+  /* ============ تریلر ============ */
+  #trailer {
+    position: fixed; inset: 0;
+    background: radial-gradient(circle at 50% 50%, #2a0050 0%, #0a0014 70%);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 9999; overflow: hidden; flex-direction: column; padding: 20px;
+  }
+  .particle {
+    position: absolute; width: 6px; height: 6px;
+    background: #b366ff; border-radius: 50%;
+    box-shadow: 0 0 20px #b366ff, 0 0 40px #8a2be2;
+    animation: floatParticle 8s infinite ease-in-out;
+  }
+  @keyframes floatParticle {
+    0%,100% { transform: translate(0,0) scale(1); opacity: 0.3; }
+    50% { transform: translate(40px,-60px) scale(1.8); opacity: 1; }
+  }
+  #trailer-text {
+    font-size: clamp(1.5rem, 6vw, 5rem); font-weight: 900;
+    text-align: center; color: #fff;
+    text-shadow: 0 0 20px #b366ff, 0 0 40px #8a2be2, 0 0 80px #6a0dad;
+    animation: pulse 2s infinite ease-in-out;
+    padding: 20px; z-index: 2; transition: all 0.5s ease;
+    position: relative; max-width: 95vw; word-wrap: break-word;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
+  .glitch { animation: glitch 0.3s infinite; }
+  @keyframes glitch {
+    0% { transform: translate(0); text-shadow: 0 0 20px #b366ff, 0 0 40px #8a2be2; }
+    20% { transform: translate(-3px, 2px); text-shadow: 3px 0 #ff00ff, -3px 0 #00ffff; }
+    40% { transform: translate(3px, -2px); text-shadow: -3px 0 #ff00ff, 3px 0 #00ffff; }
+    60% { transform: translate(-2px, -3px); text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff; }
+    80% { transform: translate(2px, 3px); text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff; }
+    100% { transform: translate(0); text-shadow: 0 0 20px #b366ff, 0 0 40px #8a2be2; }
+  }
+  .shake { animation: shake 0.5s; }
+  @keyframes shake {
+    0%,100% { transform: translate(0); }
+    10%,30%,50%,70%,90% { transform: translate(-8px, 4px); }
+    20%,40%,60%,80% { transform: translate(8px, -4px); }
+  }
+  #enter-btn {
+    position: absolute; bottom: 15%;
+    padding: 16px 45px; font-size: clamp(1rem, 3vw, 1.4rem); font-weight: bold;
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    color: #fff; background: linear-gradient(135deg, #8a2be2, #b366ff);
+    border: none; border-radius: 50px; cursor: pointer;
+    box-shadow: 0 0 30px #8a2be2, 0 0 60px #6a0dad;
+    animation: pulse 1.5s infinite; transition: transform 0.3s; z-index: 3;
+  }
+  #enter-btn:hover { transform: scale(1.1); }
+  #loading-bar {
+    position: absolute; bottom: 8%; width: 70%; max-width: 500px; height: 6px;
+    background: rgba(179,102,255,0.2); border-radius: 10px; overflow: hidden;
+  }
+  #loading-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #8a2be2, #b366ff);
+    box-shadow: 0 0 20px #b366ff; transition: width 0.3s linear;
+  }
+  #flash {
+    position: fixed; inset: 0; background: #fff;
+    opacity: 0; pointer-events: none; z-index: 10000;
+    transition: opacity 0.3s;
+  }
+
+  /* ============ صفحه اصلی ============ */
+  #main-site {
+    display: none; padding: 40px 20px 120px; min-height: 100vh;
+    background:
+      radial-gradient(circle at 20% 10%, #3a0060 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, #6a0dad 0%, transparent 50%),
+      #0a0014;
+    position: relative; overflow: hidden;
+  }
+  #main-site::before {
+    content:''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(2px 2px at 20% 30%, #b366ff, transparent),
+      radial-gradient(2px 2px at 60% 70%, #8a2be2, transparent),
+      radial-gradient(2px 2px at 80% 20%, #b366ff, transparent),
+      radial-gradient(2px 2px at 30% 80%, #8a2be2, transparent);
+    background-size: 200px 200px;
+    animation: moveBg 20s linear infinite;
+    opacity: 0.6; pointer-events: none;
+  }
+  @keyframes moveBg { from{background-position:0 0;} to{background-position:200px 200px;} }
+
+  .header { text-align: center; margin-bottom: 40px; position: relative; z-index: 1; }
+  .header h1 {
+    font-family: 'Orbitron', 'Vazirmatn', Tahoma, sans-serif;
+    font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 900;
+    letter-spacing: 8px;
+    background: linear-gradient(90deg, #b366ff, #fff, #b366ff);
+    background-size: 200% auto;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    animation: shine 3s linear infinite; margin-bottom: 10px;
+    word-wrap: break-word;
+    filter: drop-shadow(0 0 30px rgba(179,102,255,0.5));
+  }
+  @keyframes shine { to { background-position: 200% center; } }
+  .header p { color: #b366ff; font-size: clamp(1rem, 2.5vw, 1.3rem); text-shadow: 0 0 15px #8a2be2; font-weight: 700; }
+
+  #replay-btn {
+    display: block; margin: 20px auto 40px;
+    padding: 14px 35px; background: transparent;
+    border: 2px solid #b366ff; color: #b366ff;
+    border-radius: 30px; cursor: pointer;
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    font-size: 1rem; font-weight: bold;
+    transition: all 0.3s; position: relative; z-index: 1;
+  }
+  #replay-btn:hover {
+    background: #b366ff; color: #0a0014;
+    box-shadow: 0 0 40px #b366ff; transform: scale(1.05);
+  }
+
+  .new-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff00ff, #b366ff);
+    color: #fff; font-size: 0.7rem; font-weight: 900;
+    padding: 3px 10px; border-radius: 10px;
+    margin-right: 8px;
+    box-shadow: 0 0 15px #ff00ff;
+    animation: pulseBadge 1.5s infinite;
+    vertical-align: middle;
+  }
+  @keyframes pulseBadge {
+    0%,100% { transform: scale(1); box-shadow: 0 0 15px #ff00ff; }
+    50% { transform: scale(1.1); box-shadow: 0 0 25px #ff00ff, 0 0 40px #b366ff; }
+  }
+
+  .songs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 25px; max-width: 1300px; margin: 0 auto;
+    position: relative; z-index: 1;
+  }
+
+  /* ============ کارت آهنگ با کاور ============ */
+  .song-card {
+    background: linear-gradient(145deg, rgba(138,43,226,0.2), rgba(138,43,226,0.05));
+    border: 2px solid rgba(179, 102, 255, 0.4);
+    border-radius: 24px; padding: 0;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .song-card::before {
+    content:''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(179,102,255,0.3), transparent);
+    transform: translateX(-100%); transition: transform 0.8s;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .song-card:hover::before { transform: translateX(100%); }
+  .song-card:hover {
+    transform: translateY(-12px) scale(1.02);
+    border-color: #b366ff;
+    box-shadow: 0 0 50px #8a2be2, 0 0 100px rgba(138,43,226,0.5);
+  }
+  .song-card.is-new {
+    border-color: #ff00ff;
+    box-shadow: 0 0 30px rgba(255,0,255,0.5);
+  }
+  .song-card.playing {
+    border-color: #b366ff;
+    box-shadow: 0 0 50px #8a2be2, 0 0 100px rgba(138,43,226,0.6);
+  }
+
+  /* کاور آهنگ */
+  .song-cover {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #2a0050, #0a0014);
+    border-radius: 22px 22px 0 0;
+  }
+  .song-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: block;
+  }
+  .song-card:hover .song-cover img {
+    transform: scale(1.1);
+  }
+  .song-cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(10,0,20,0.95) 100%);
+    pointer-events: none;
+  }
+  /* کاور پیش‌فرض اگه عکس نبود */
+  .song-cover.no-cover {
+    display: flex; align-items: center; justify-content: center;
+    background: 
+      radial-gradient(circle at 30% 30%, #4a0090 0%, transparent 60%),
+      radial-gradient(circle at 70% 70%, #6a0dad 0%, transparent 60%),
+      linear-gradient(135deg, #2a0050, #0a0014);
+  }
+  .song-cover.no-cover::before {
+    content: '🎵';
+    font-size: 6rem;
+    opacity: 0.3;
+    filter: hue-rotate(270deg) drop-shadow(0 0 30px #b366ff);
+  }
+
+  /* بج جدید رو کاور */
+  .song-cover .new-badge {
+    position: absolute;
+    top: 15px; right: 15px;
+    z-index: 3;
+    margin-right: 0;
+    padding: 6px 14px;
+    font-size: 0.75rem;
+    border-radius: 12px;
+  }
+
+  /* آیکون پخش وسط کاور */
+  .cover-play {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, #8a2be2, #b366ff);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 3;
+    box-shadow: 0 0 40px #b366ff, 0 0 80px #8a2be2;
+    cursor: pointer;
+  }
+  .cover-play svg { width: 32px; height: 32px; fill: #fff; margin-right: -3px; }
+  .song-card:hover .cover-play {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  .song-card.playing .cover-play {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    animation: pulse 1.5s infinite;
+  }
+  .song-card.playing .cover-play svg.play-icon { display: none; }
+  .song-card.playing .cover-play svg.pause-icon { display: block; }
+  .song-card:not(.playing) .cover-play svg.pause-icon { display: none; }
+  .song-card:not(.playing) .cover-play svg.play-icon { display: block; }
+
+  /* اطلاعات آهنگ زیر کاور */
+  .song-info {
+    padding: 20px 22px 22px;
+    position: relative;
+    z-index: 1;
+    margin-top: -30px;
+  }
+  .song-title {
+    font-size: 1.25rem; font-weight: 900;
+    color: #fff; margin-bottom: 12px;
+    text-shadow: 0 0 15px rgba(179,102,255,0.8);
+    word-wrap: break-word;
+    line-height: 1.3;
+  }
+
+  /* ============ پلیر کوچیک تو کارت ============ */
+  .mini-player {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .mini-player-main {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .mini-progress {
+    flex: 1; position: relative; height: 5px;
+    background: rgba(179,102,255,0.2);
+    border-radius: 10px; cursor: pointer; overflow: hidden;
+  }
+  .mini-progress-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #8a2be2, #b366ff);
+    border-radius: 10px;
+    box-shadow: 0 0 10px #b366ff;
+    transition: width 0.1s linear;
+    position: relative;
+  }
+  .mini-progress-fill::after {
+    content: ''; position: absolute;
+    right: -5px; top: 50%; transform: translateY(-50%);
+    width: 10px; height: 10px; background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 12px #b366ff, 0 0 20px #8a2be2;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .mini-progress:hover .mini-progress-fill::after { opacity: 1; }
+  .time-display {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem; color: #b366ff;
+    letter-spacing: 1px; direction: ltr;
+    flex-shrink: 0;
+  }
+  .mini-player-controls {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+  }
+  .volume-wrap {
+    display: flex; align-items: center; gap: 8px;
+    flex: 1; max-width: 150px;
+  }
+  .volume-icon {
+    width: 18px; height: 18px; fill: #b366ff;
+    cursor: pointer; flex-shrink: 0;
+    transition: fill 0.2s;
+  }
+  .volume-icon:hover { fill: #fff; }
+  .volume-slider {
+    flex: 1; -webkit-appearance: none; appearance: none;
+    height: 4px; background: rgba(179,102,255,0.25);
+    border-radius: 10px; outline: none; cursor: pointer;
+  }
+  .volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 13px; height: 13px;
+    background: linear-gradient(135deg, #8a2be2, #b366ff);
+    border-radius: 50%; cursor: pointer;
+    box-shadow: 0 0 10px #b366ff;
+  }
+  .volume-slider::-moz-range-thumb {
+    width: 13px; height: 13px;
+    background: linear-gradient(135deg, #8a2be2, #b366ff);
+    border: none; border-radius: 50%; cursor: pointer;
+    box-shadow: 0 0 10px #b366ff;
+  }
+  .download-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 7px 13px; background: transparent;
+    border: 2px solid #b366ff; color: #b366ff;
+    border-radius: 20px; text-decoration: none;
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    font-size: 0.78rem; font-weight: bold;
+    transition: all 0.25s; flex-shrink: 0;
+  }
+  .download-btn:hover {
+    background: #b366ff; color: #0a0014;
+    box-shadow: 0 0 20px #b366ff; transform: scale(1.05);
+  }
+  .download-btn svg { width: 13px; height: 13px; fill: currentColor; }
+
+  /* ============ پلیر پایین ثابت ============ */
+  #bottom-player {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(150%);
+    width: calc(100% - 40px);
+    max-width: 900px;
+    background: linear-gradient(145deg, rgba(42,0,80,0.95), rgba(10,0,20,0.98));
+    border: 2px solid #8a2be2;
+    border-radius: 20px;
+    padding: 15px 20px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 10px 50px rgba(138,43,226,0.5), 0 0 100px rgba(138,43,226,0.3);
+    z-index: 1000;
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  #bottom-player.active {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .bp-cover {
+    width: 55px; height: 55px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2a0050, #0a0014);
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+    box-shadow: 0 0 20px rgba(179,102,255,0.5);
+  }
+  .bp-cover img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .bp-cover.no-cover {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, #4a0090, #2a0050);
+  }
+
+  .bp-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .bp-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bp-time {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    color: #b366ff;
+    direction: ltr;
+    text-align: right;
+  }
+
+  .bp-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .bp-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+  .bp-btn:hover {
+    background: rgba(179,102,255,0.2);
+    transform: scale(1.1);
+  }
+  .bp-btn svg { width: 20px; height: 20px; fill: #b366ff; }
+  .bp-btn.main-btn {
+    width: 50px; height: 50px;
+    background: linear-gradient(135deg, #8a2be2, #b366ff);
+    box-shadow: 0 0 20px rgba(179,102,255,0.6);
+  }
+  .bp-btn.main-btn svg {
+    width: 22px; height: 22px;
+    fill: #fff;
+    margin-right: -2px;
+  }
+  .bp-btn.main-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px #b366ff, 0 0 60px #8a2be2;
+  }
+  .bp-btn svg.play-icon { display: none; }
+  .bp-btn.playing svg.play-icon { display: block; }
+  .bp-btn.playing svg.pause-icon { display: none; }
+
+  /* نوار پیشرفت پایین */
+  .bp-progress {
+    position: absolute;
+    bottom: 0; left: 20px; right: 20px;
+    height: 3px;
+    background: rgba(179,102,255,0.15);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .bp-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #8a2be2, #b366ff);
+    box-shadow: 0 0 10px #b366ff;
+    transition: width 0.1s linear;
+    border-radius: 10px;
+  }
+
+  .empty-msg, .loading-msg {
+    text-align: center; color: #b366ff;
+    font-size: 1.3rem;
+    padding: 80px 20px; grid-column: 1/-1;
+  }
+  .loading-msg::after {
+    content: '';
+    display: inline-block;
+    width: 18px; height: 18px;
+    margin-right: 10px;
+    border: 2px solid #b366ff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .light-ring {
+    position: absolute; border: 2px solid #b366ff;
+    border-radius: 50%; pointer-events: none;
+    animation: ringExpand 2s ease-out infinite;
+  }
+  @keyframes ringExpand {
+    from { width: 0; height: 0; opacity: 1; }
+    to { width: 350px; height: 350px; opacity: 0; transform: translate(-50%, -50%); }
+  }
+
+  /* ============ موبایل ============ */
+  @media (max-width: 768px) {
+    .songs-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    #main-site { padding: 20px 12px 150px; }
+    .header h1 { letter-spacing: 4px; }
+    #bottom-player {
+      bottom: 10px;
+      width: calc(100% - 20px);
+      padding: 12px 15px;
+      border-radius: 16px;
+    }
+    .bp-cover { width: 45px; height: 45px; }
+    .bp-btn { width: 36px; height: 36px; }
+    .bp-btn.main-btn { width: 44px; height: 44px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="cursor-ring"></div>
+<div id="cursor-dot"></div>
+<div id="flash"></div>
+
+<!-- ============ تریلر ============ -->
+<div id="trailer">
+  <div id="particles"></div>
+  <h1 id="trailer-text">🎧 آماده‌ای؟</h1>
+  <button id="enter-btn">ورود به فانک لند</button>
+  <div id="loading-bar"><div id="loading-fill"></div></div>
+  <audio id="trailer-audio" src="uploads/tentana.m4a" preload="auto"></audio>
+</div>
+
+<!-- ============ صفحه اصلی ============ -->
+<div id="main-site">
+  <div class="header">
+    <h1>FUNK LAND</h1>
+    <p>💜 سرزمین فانک 💜</p>
+  </div>
+  <button id="replay-btn">🔁 پخش دوباره تریلر</button>
+
+  <div class="songs-grid" id="songs-grid">
+    <div class="loading-msg">در حال بارگذاری آهنگ‌ها</div>
+  </div>
+</div>
+
+<!-- ============ پلیر پایین ثابت ============ -->
+<div id="bottom-player">
+  <div class="bp-cover no-cover" id="bp-cover">🎵</div>
+  <div class="bp-info">
+    <div class="bp-name" id="bp-name">—</div>
+    <div class="bp-time" id="bp-time">0:00 / 0:00</div>
+  </div>
+  <div class="bp-controls">
+    <button class="bp-btn" id="bp-prev" title="قبلی">
+      <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+    </button>
+    <button class="bp-btn main-btn" id="bp-play" title="پخش/توقف">
+      <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <svg class="pause-icon" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+    </button>
+    <button class="bp-btn" id="bp-next" title="بعدی">
+      <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+    </button>
+  </div>
+  <div class="bp-progress" id="bp-progress">
+    <div class="bp-progress-fill" id="bp-progress-fill"></div>
+  </div>
+</div>
+
+<script>
+// ==================== ذرات ====================
+const particlesBox = document.getElementById('particles');
+const particleCount = 70;
+for (let i = 0; i < particleCount; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = Math.random() * 100 + '%';
+  p.style.top = Math.random() * 100 + '%';
+  p.style.animationDelay = (Math.random() * 8) + 's';
+  p.style.animationDuration = (6 + Math.random() * 6) + 's';
+  particlesBox.appendChild(p);
+}
+
+// ==================== کرسر ====================
+const cursorDot = document.getElementById('cursor-dot');
+const cursorRing = document.getElementById('cursor-ring');
+let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+if (isDesktop) {
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    cursorDot.style.left = mouseX + 'px';
+    cursorDot.style.top = mouseY + 'px';
+  });
+  (function animateRing() {
+    ringX += (mouseX - ringX) * 0.18;
+    ringY += (mouseY - ringY) * 0.18;
+    cursorRing.style.left = ringX + 'px';
+    cursorRing.style.top = ringY + 'px';
+    requestAnimationFrame(animateRing);
+  })();
+}
+function bindHover() {
+  document.querySelectorAll('a, button, input, [role="button"], .mini-progress, .song-card, .cover-play, .bp-btn, .download-btn').forEach(el => {
+    if (el.dataset.cursorBound) return;
+    el.dataset.cursorBound = '1';
+    el.addEventListener('mouseenter', () => { cursorDot.classList.add('hover'); cursorRing.classList.add('hover'); });
+    el.addEventListener('mouseleave', () => { cursorDot.classList.remove('hover'); cursorRing.classList.remove('hover'); });
+  });
+}
+if (isDesktop) {
+  bindHover();
+  setInterval(bindHover, 2000);
+}
+
+// ==================== تریلر ====================
+const enterBtn = document.getElementById('enter-btn');
+const trailerText = document.getElementById('trailer-text');
+const audio = document.getElementById('trailer-audio');
+const loadingFill = document.getElementById('loading-fill');
+const trailer = document.getElementById('trailer');
+const mainSite = document.getElementById('main-site');
+const flash = document.getElementById('flash');
+const replayBtn = document.getElementById('replay-btn');
+
+const urlParams = new URLSearchParams(window.location.search);
+const skipTrailer = urlParams.get('trailer') === 'false';
+
+let started = false;
+
+function shakeScreen() {
+  document.body.classList.add('shake');
+  setTimeout(() => document.body.classList.remove('shake'), 500);
+}
+function doFlash() {
+  flash.style.opacity = '0.8';
+  setTimeout(() => flash.style.opacity = '0', 300);
+}
+function spawnRing(x, y) {
+  const ring = document.createElement('div');
+  ring.className = 'light-ring';
+  ring.style.left = x + 'px';
+  ring.style.top = y + 'px';
+  ring.style.transform = 'translate(-50%, -50%)';
+  document.body.appendChild(ring);
+  setTimeout(() => ring.remove(), 2000);
+}
+
+function startTrailer() {
+  if (started) return;
+  started = true;
+  enterBtn.style.display = 'none';
+  trailer.style.display = 'flex';
+  trailer.style.opacity = '1';
+  mainSite.style.display = 'none';
+  audio.currentTime = 0;
+  audio.volume = 0.9;
+  audio.play().catch(err => { showMainSite(); return; });
+  trailerText.textContent = 'به فانک لند خوش اومدید :)';
+  trailerText.classList.remove('glitch');
+  const totalSeconds = 25;
+  const interval = setInterval(() => {
+    const t = audio.currentTime;
+    loadingFill.style.width = Math.min((t / totalSeconds) * 100, 100) + '%';
+  }, 100);
+  setTimeout(() => {
+    shakeScreen();
+    spawnRing(window.innerWidth / 2, window.innerHeight / 2);
+    trailerText.classList.add('glitch');
+    setTimeout(() => { trailerText.textContent = 'شاهکارترین سایت فانک'; }, 200);
+    setTimeout(() => { trailerText.classList.remove('glitch'); }, 800);
+  }, 10000);
+  setTimeout(() => {
+    clearInterval(interval);
+    doFlash();
+    setTimeout(() => { audio.pause(); showMainSite(); }, 300);
+  }, 25000);
+}
+
+function showMainSite() {
+  trailer.style.transition = 'opacity 1s ease';
+  trailer.style.opacity = '0';
+  setTimeout(() => {
+    trailer.style.display = 'none';
+    mainSite.style.display = 'block';
+    mainSite.style.opacity = '0';
+    mainSite.style.transition = 'opacity 1s ease';
+    setTimeout(() => mainSite.style.opacity = '1', 50);
+  }, 1000);
+}
+
+if (skipTrailer) {
+  trailer.style.display = 'none';
+  mainSite.style.display = 'block';
+  mainSite.style.opacity = '1';
+  replayBtn.style.display = 'none';
+} else {
+  enterBtn.addEventListener('click', startTrailer);
+  replayBtn.addEventListener('click', () => {
+    started = false;
+    enterBtn.style.display = 'block';
+    startTrailer();
+  });
+  setInterval(() => {
+    if (trailer.style.display !== 'none' && started) {
+      spawnRing(Math.random() * window.innerWidth, Math.random() * window.innerHeight);
+    }
+  }, 1500);
+}
+
+// ==================== لود آهنگ‌ها ====================
+let allSongs = [];
+let currentIndex = -1;
+let globalAudio = null;
+let isDraggingBP = false;
+
+async function loadSongs() {
+  const grid = document.getElementById('songs-grid');
+  try {
+    const res = await fetch("songs.json?t=" + Date.now());
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    allSongs = await res.json();
+    allSongs = allSongs.map(s => ({
+      ...s,
+      link: "uploads/" + s.file,
+      coverUrl: s.cover ? "covers/" + s.cover : "",
+      added_at: s.date || 0
+    }));
+    allSongs.sort((a, b) => (b.added_at || 0) - (a.added_at || 0));
+    renderSongs();
+  } catch (err) {
+    console.log("خطا:", err);
+    grid.innerHTML = '<div class="empty-msg">خطا در بارگذاری آهنگ‌ها 😢</div>';
+  }
+}
+
+function renderSongs() {
+  const grid = document.getElementById('songs-grid');
+  if (!allSongs.length) {
+    grid.innerHTML = '<div class="empty-msg">هنوز آهنگی اضافه نشده 🎵</div>';
+    return;
+  }
+  const NEW_THRESHOLD = 7 * 24 * 60 * 60;
+  const now = Math.floor(Date.now() / 1000);
+
+  grid.innerHTML = allSongs.map((song, index) => {
+    const isNew = song.added_at && (now - song.added_at) < NEW_THRESHOLD;
+    const safeName = escapeHtml(song.name);
+    const safeLink = escapeAttr(song.link);
+    const coverHtml = song.coverUrl
+      ? `<img src="${escapeAttr(song.coverUrl)}" alt="${safeName}" loading="lazy" onerror="this.parentElement.classList.add('no-cover'); this.remove();">`
+      : '';
+    const coverClass = song.coverUrl ? '' : 'no-cover';
+    
+    return `
+      <div class="song-card ${isNew ? 'is-new' : ''}" data-index="${index}" data-src="${safeLink}">
+        <div class="song-cover ${coverClass}">
+          ${coverHtml}
+          ${isNew ? '<span class="new-badge">جدید</span>' : ''}
+          <div class="cover-play" data-play="${index}">
+            <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="pause-icon" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+          </div>
+        </div>
+        <div class="song-info">
+          <div class="song-title">${safeName}</div>
+          <div class="mini-player">
+            <div class="mini-player-main">
+              <div class="mini-progress">
+                <div class="mini-progress-fill"></div>
+              </div>
+              <div class="time-display">0:00 / 0:00</div>
+            </div>
+            <div class="mini-player-controls">
+              <div class="volume-wrap">
+                <svg class="volume-icon" viewBox="0 0 24 24"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1">
+              </div>
+              <a class="download-btn" href="${safeLink}" download>
+                <svg viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>
+                دانلود
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  attachPlayers();
+  bindHover();
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+function escapeAttr(str) { return escapeHtml(str); }
+
+function formatTime(sec) {
+  if (isNaN(sec) || !isFinite(sec)) return '0:00';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return m + ':' + (s < 10 ? '0' : '') + s;
+}
+
+// ==================== پلیر ====================
+function attachPlayers() {
+  document.querySelectorAll('.song-card').forEach(card => {
+    const index = parseInt(card.dataset.index);
+    const cover = card.querySelector('.song-cover');
+    const coverPlay = card.querySelector('.cover-play');
+    const miniProgress = card.querySelector('.mini-progress');
+    const miniProgressFill = card.querySelector('.mini-progress-fill');
+    const timeDisplay = card.querySelector('.time-display');
+    const volumeSlider = card.querySelector('.volume-slider');
+    const volumeIcon = card.querySelector('.volume-icon');
+
+    // کلیک روی کاور برای پخش
+    coverPlay.addEventListener('click', (e) => {
+      e.stopPropagation();
+      playSong(index);
+    });
+    cover.addEventListener('click', () => playSong(index));
+
+    // Seek
+    function seekFromEvent(e) {
+      if (!globalAudio || !globalAudio.duration || currentIndex !== index) return;
+      const rect = miniProgress.getBoundingClientRect();
+      let clientX = e.clientX;
+      if (e.touches && e.touches[0]) clientX = e.touches[0].clientX;
+      if (e.changedTouches && e.changedTouches[0]) clientX = e.changedTouches[0].clientX;
+      let x = clientX - rect.left;
+      const pct = Math.max(0, Math.min(1, x / rect.width));
+      globalAudio.currentTime = pct * globalAudio.duration;
+    }
+
+    let miniDragging = false;
+    miniProgress.addEventListener('mousedown', (e) => { if (currentIndex === index) { miniDragging = true; seekFromEvent(e); } });
+    document.addEventListener('mousemove', (e) => { if (miniDragging) seekFromEvent(e); });
+    document.addEventListener('mouseup', () => { miniDragging = false; });
+    miniProgress.addEventListener('touchstart', (e) => { if (currentIndex === index) { miniDragging = true; seekFromEvent(e); } }, { passive: true });
+    miniProgress.addEventListener('touchmove', (e) => { if (miniDragging) seekFromEvent(e); }, { passive: true });
+    miniProgress.addEventListener('touchend', () => { miniDragging = false; });
+
+    // Volume
+    volumeSlider.addEventListener('input', () => {
+      if (currentIndex === index && globalAudio) {
+        globalAudio.volume = parseFloat(volumeSlider.value);
+      }
+    });
+    volumeIcon.addEventListener('click', () => {
+      if (currentIndex === index && globalAudio) {
+        if (globalAudio.volume > 0) {
+          volumeSlider.dataset.last = globalAudio.volume;
+          globalAudio.volume = 0;
+          volumeSlider.value = 0;
+        } else {
+          const last = parseFloat(volumeSlider.dataset.last) || 1;
+          globalAudio.volume = last;
+          volumeSlider.value = last;
+        }
+      }
+    });
+
+    // ذخیره برای آپدیت
+    card._miniProgress = miniProgressFill;
+    card._timeDisplay = timeDisplay;
+  });
+}
+
+// ==================== playSong ====================
+function playSong(index) {
+  if (index < 0 || index >= allSongs.length) return;
+
+  // همون آهنگ
+  if (index === currentIndex && globalAudio) {
+    if (globalAudio.paused) {
+      globalAudio.play();
+      updatePlayState(true);
+    } else {
+      globalAudio.pause();
+      updatePlayState(false);
+    }
+    return;
+  }
+
+  // آهنگ جدید
+  if (globalAudio) {
+    globalAudio.pause();
+    globalAudio.src = "";
+    globalAudio = null;
+  }
+
+  currentIndex = index;
+  const song = allSongs[index];
+
+  globalAudio = new Audio();
+  globalAudio.preload = "auto";
+  globalAudio.src = song.link;
+
+  // آپدیت پلیر پایین
+  updateBottomPlayer(song);
+
+  globalAudio.play().then(() => {
+    updatePlayState(true);
+  }).catch(err => {
+    console.log("خطا:", err);
+  });
+
+  globalAudio.addEventListener('timeupdate', updateAllProgress);
+  globalAudio.addEventListener('loadedmetadata', updateAllProgress);
+  globalAudio.addEventListener('ended', () => {
+    updatePlayState(false);
+    if (currentIndex < allSongs.length - 1) {
+      playSong(currentIndex + 1);
+    }
+  });
+  globalAudio.addEventListener('error', () => {
+    console.log("خطای لود");
+  });
+
+  // نمایش پلیر پایین
+  document.getElementById('bottom-player').classList.add('active');
+}
+
+// ==================== آپدیت UI ====================
+function updatePlayState(isPlaying) {
+  document.querySelectorAll('.song-card').forEach((c, i) => {
+    c.classList.toggle('playing', isPlaying && i === currentIndex);
+  });
+  const bpPlay = document.getElementById('bp-play');
+  bpPlay.classList.toggle('playing', isPlaying);
+}
+
+function updateAllProgress() {
+  if (!globalAudio) return;
+  const cur = globalAudio.currentTime || 0;
+  const dur = globalAudio.duration || 0;
+  const pct = dur ? (cur / dur) * 100 : 0;
+
+  // آپدیت پلیر پایین
+  document.getElementById('bp-progress-fill').style.width = pct + '%';
+  document.getElementById('bp-time').textContent = formatTime(cur) + ' / ' + formatTime(dur);
+
+  // آپدیت کارت فعال
+  const activeCard = document.querySelector(`.song-card[data-index="${currentIndex}"]`);
+  if (activeCard) {
+    if (activeCard._miniProgress) activeCard._miniProgress.style.width = pct + '%';
+    if (activeCard._timeDisplay) activeCard._timeDisplay.textContent = formatTime(cur) + ' / ' + formatTime(dur);
+  }
+}
+
+function updateBottomPlayer(song) {
+  const bpCover = document.getElementById('bp-cover');
+  if (song.coverUrl) {
+    bpCover.classList.remove('no-cover');
+    bpCover.innerHTML = `<img src="${escapeAttr(song.coverUrl)}" alt="">`;
+  } else {
+    bpCover.classList.add('no-cover');
+    bpCover.innerHTML = '🎵';
+  }
+  document.getElementById('bp-name').textContent = song.name;
+}
+
+// ==================== دکمه‌های پلیر پایین ====================
+document.getElementById('bp-play').addEventListener('click', () => {
+  if (!globalAudio) {
+    if (allSongs.length > 0) playSong(0);
+    return;
+  }
+  if (globalAudio.paused) {
+    globalAudio.play();
+    updatePlayState(true);
+  } else {
+    globalAudio.pause();
+    updatePlayState(false);
+  }
+});
+
+document.getElementById('bp-prev').addEventListener('click', () => {
+  if (allSongs.length === 0) return;
+  if (globalAudio && globalAudio.currentTime > 3) {
+    globalAudio.currentTime = 0;
+  } else if (currentIndex > 0) {
+    playSong(currentIndex - 1);
+  }
+});
+
+document.getElementById('bp-next').addEventListener('click', () => {
+  if (allSongs.length === 0) return;
+  if (currentIndex < allSongs.length - 1) {
+    playSong(currentIndex + 1);
+  }
+});
+
+// Seek پلیر پایین
+function seekBP(e) {
+  if (!globalAudio || !globalAudio.duration) return;
+  const rect = document.getElementById('bp-progress').getBoundingClientRect();
+  let clientX = e.clientX;
+  if (e.touches && e.touches[0]) clientX = e.touches[0].clientX;
+  if (e.changedTouches && e.changedTouches[0]) clientX = e.changedTouches[0].clientX;
+  let x = clientX - rect.left;
+  const pct = Math.max(0, Math.min(1, x / rect.width));
+  globalAudio.currentTime = pct * globalAudio.duration;
+}
+const bpProgress = document.getElementById('bp-progress');
+bpProgress.addEventListener('mousedown', (e) => { isDraggingBP = true; seekBP(e); });
+document.addEventListener('mousemove', (e) => { if (isDraggingBP) seekBP(e); });
+document.addEventListener('mouseup', () => { isDraggingBP = false; });
+bpProgress.addEventListener('touchstart', (e) => { isDraggingBP = true; seekBP(e); }, { passive: true });
+bpProgress.addEventListener('touchmove', (e) => { if (isDraggingBP) seekBP(e); }, { passive: true });
+bpProgress.addEventListener('touchend', () => { isDraggingBP = false; });
+
+// شروع
+loadSongs();
+</script>
+</body>
+</html>
